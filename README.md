@@ -1,5 +1,7 @@
 # Namecheap DDNS Updater
 
+[![Unraid Community App](https://img.shields.io/badge/Unraid-Community--App-blue?logo=docker)](https://github.com/selfhosters/unRAID-CA-templates/pull/564)
+
 This container automatically updates your Namecheap Dynamic DNS records for multiple hosts at a specified interval.
 
 ## How It Works

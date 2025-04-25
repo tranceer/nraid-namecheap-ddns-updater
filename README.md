@@ -28,3 +28,4 @@ Before using this container:
 
 - Based on the tutorial: [How to Update Namecheap DNS with Docker (YouTube)](https://www.youtube.com/watch?v=9Wd2a_69QIw)
 - Original project by [Daniel Boctor](https://github.com/daniel-boctor/)
+- Docker icon sourced from [hernandito's unRAID Docker Folder Animated Icons - Pale Collection](https://github.com/hernandito/unRAID-Docker-Folder-Animated-Icons---Alternate-Colors)

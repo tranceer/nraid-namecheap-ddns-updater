@@ -1,33 +1,43 @@
 # Namecheap DDNS Updater
 
-[![Unraid Community App](https://img.shields.io/badge/Unraid-Community--App-blue?logo=docker)](https://github.com/selfhosters/unRAID-CA-templates/pull/564)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tranceer/namecheap-ddns-updater?style=flat-square)](https://hub.docker.com/r/tranceer/namecheap-ddns-updater)
+[![Docker Image Size](https://img.shields.io/docker/image-size/tranceer/namecheap-ddns-updater/latest?style=flat-square)](https://hub.docker.com/r/tranceer/namecheap-ddns-updater)
 
-This container automatically updates your Namecheap Dynamic DNS records for multiple hosts at a specified interval.
+Automatically updates your Namecheap Dynamic DNS records for multiple hosts at a specified interval.
 
-## How It Works
+---
 
-- At container startup, it generates a bash script at `/app/entrypoint.sh`.
-- This script updates all your specified subdomains via Namecheap's Dynamic DNS API.
-- It checks your public IP address and updates it every X seconds (default: 600s / 10 minutes).
+## 📦 Features
+- Easy to configure
+- Lightweight container
+- Supports multiple hosts
+- Simple logging output
+- Fully customizable `entrypoint.sh` script inside the container
 
-## Setup Requirements
+---
 
-Before using this container:
-- Create an **A Record** for `@.yourdomain.com` in Namecheap DNS.
-- Create **CNAME records** for each subdomain you want to manage (e.g., `admin.yourdomain.com`, `nextcloud.yourdomain.com`).
-- Enable **Dynamic DNS** in Namecheap and copy your **API Key**.
+## 🛠️ Usage
 
-## Environment Variables
+You can deploy this container easily via Unraid Community Applications.
 
-| Variable   | Description |
-|------------|-------------|
-| `DOMAIN`   | Your domain name (e.g., `example.com`) |
-| `API_KEY`  | Your Dynamic DNS API password (from Namecheap panel) |
-| `HOSTS`    | Comma-separated list of hosts (e.g., `@,adminer,jellyfin`) |
-| `INTERVAL` | Update interval in seconds (default: 600) |
+**Environment Variables:**
 
-## Credit
+| Variable  | Description |
+|:----------|:------------|
+| `DOMAIN`  | Your domain name (e.g., `yourdomain.com`) |
+| `API_KEY` | Your Namecheap Dynamic DNS API key |
+| `HOSTS`   | Comma-separated list of hosts to update (e.g., `@,www,admin`) |
+| `INTERVAL`| How often to update the DNS records, in seconds (e.g., `600`) |
 
-- Based on the tutorial: [How to Update Namecheap DNS with Docker (YouTube)](https://www.youtube.com/watch?v=9Wd2a_69QIw)
-- Original project by [Daniel Boctor](https://github.com/daniel-boctor/)
-- Docker icon sourced from [hernandito's unRAID Docker Folder Animated Icons - Pale Collection](https://github.com/hernandito/unRAID-Docker-Folder-Animated-Icons---Alternate-Colors)
+---
+
+## 🖥️ Setup Example
+
+```bash
+docker run -d \
+  --name=namecheap-ddns-updater \
+  -e DOMAIN=yourdomain.com \
+  -e API_KEY=your_api_key \
+  -e HOSTS=@,www,admin \
+  -e INTERVAL=600 \
+  tranceer/namecheap-ddns-updater:latest

@@ -1,45 +1,38 @@
 #!/bin/bash
 
-# Prepare environment variables
-domain="${DOMAIN}"
-api_key="${API_KEY}"
-interval="${INTERVAL:-600}" # Default to 600 seconds if not set
-IFS=',' read -ra hosts <<< "${HOSTS}"
+# Default interval if not provided
+interval="${INTERVAL:-600}"
 
-# Create entrypoint script dynamically
-cat <<EOF > /app/entrypoint.sh
+# Creează scriptul entrypoint
+cat << 'EOF' > /app/entrypoint.sh
 #!/bin/bash
 
+IFS=',' read -ra hosts <<< "${HOSTS}"
+
 while true; do
-    local_ip=\$(curl -s http://checkip.amazonaws.com)
-    echo "🔍 Local IP: \$local_ip"
+    local_ip=$(curl -s http://checkip.amazonaws.com)
+    echo "🔍 Local IP: $local_ip"
 
-EOF
+    for host in "${hosts[@]}"; do
+        echo "🔄 Checking $host.$DOMAIN"
 
-for host in "${hosts[@]}"; do
-    cat <<EOF >> /app/entrypoint.sh
-    echo "🔄 Checking ${host}.\${domain}"
+        response=$(curl -s "https://dynamicdns.park-your-domain.com/update?host=$host&domain=$DOMAIN&password=$API_KEY")
+        err_count=$(echo "$response" | grep -oP "<ErrCount>\\K.*(?=</ErrCount>)")
+        err=$(echo "$response" | grep -oP "<Err1>\\K.*(?=</Err1>)")
 
-    response=\$(curl -s "https://dynamicdns.park-your-domain.com/update?host=${host}&domain=\${domain}&password=\${api_key}")
-    err_count=\$(echo \$response | grep -oP "<ErrCount>\\K.*(?=</ErrCount>)")
-    err=\$(echo \$response | grep -oP "<Err1>\\K.*(?=</Err1>)")
+        if [ "$err_count" = "0" ]; then
+            echo "✅ $host.$DOMAIN updated to $local_ip"
+        else
+            echo "❌ Failed to update $host.$DOMAIN - Reason: $err"
+        fi
+    done
 
-    if [ "\$err_count" = "0" ]; then
-        echo "✅ ${host}.\${domain} updated to \$local_ip"
-    else
-        echo "❌ Failed to update ${host}.\${domain} - Reason: \$err"
-    fi
-
-EOF
-done
-
-cat <<EOF >> /app/entrypoint.sh
-    echo "⏳ Sleeping ${interval} seconds..."
-    sleep ${interval}
+    echo "⏳ Sleeping $INTERVAL seconds..."
+    sleep "$INTERVAL"
 done
 EOF
 
 chmod +x /app/entrypoint.sh
 
-# Start the generated script
+# Rulează scriptul generat
 exec /app/entrypoint.sh
